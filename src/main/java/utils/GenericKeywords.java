@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.TestNG;
 
@@ -43,25 +44,27 @@ public class GenericKeywords extends TestNG{
     
     public void navigate(String urlKey){
         test.log(LogStatus.INFO,"Navigated to url");
-//        System.out.println("Navigating to "+prop.getProperty(urlKey) );
         driver.get(prop.getProperty(urlKey));
     }
     
     public void click(String objectKey){
+        waitForSpecificSeconds("1");
         test.log(LogStatus.INFO,"Clicking on "+prop.getProperty(objectKey));
         getObject(objectKey).click();
     }
 
     public void sendKeys(String objectKey, String data){
+        waitForSpecificSeconds("1");
         test.log(LogStatus.INFO,"Writing in "+prop.getProperty(objectKey));
+        getObject(objectKey).sendKeys(Keys.COMMAND+"a");
         getObject(objectKey).sendKeys(data);
+        getObject(objectKey).sendKeys(Keys.TAB);
     }
     
     public void switchtoFrame(String frameIndex) {
         test.log(LogStatus.INFO,"Switching to frame "+frameIndex );
         int s = driver.findElements(By.tagName("iframe")).size();
         System.out.println("Total frames - "+s);
-        //driver.switchTo().frame("zohoiam");
         driver.switchTo().frame(Integer.parseInt(frameIndex));
     }
     public void waitForSpecificSeconds(String numOfSeconds) {
@@ -87,12 +90,10 @@ public class GenericKeywords extends TestNG{
         test.log(LogStatus.INFO,"Exiting from frame");
         driver.switchTo().defaultContent();
     }
-    public void fillAndSubmitCheatPage() {
-        //
-    }
+
     public static void assertBlank(String objectKey) {
             String[] ObjectKeys = objectKey.split(",");
-
+        
         String assertMessage = "Testing following element for blankness: %s";
         for (String Element : ObjectKeys) {
             WebElement element=getObject(Element);
@@ -101,7 +102,6 @@ public class GenericKeywords extends TestNG{
                     switch (element.getAttribute("type").toLowerCase()) {
                         case "radio":
                         case "checkbox":
-
                             assertThat(String.format(assertMessage, element.getAttribute("id")), element.isSelected(), equalTo(false));
                             break;
                         default:
@@ -122,6 +122,24 @@ public class GenericKeywords extends TestNG{
 //        return Integer.parseInt(getScriptResult("$('input:visible, select:visible').length"));
 //    }
 
+    public static void select(String objectKey, String data) throws Exception {
+     int size = new Select(driver.findElement(By.id(prop.getProperty(objectKey)))).getOptions().size();
+     WebElement dropdown = driver.findElement(By.id(prop.getProperty(objectKey)));
+        int i;
+        for(i=0; i<size; i++){
+            dropdown.sendKeys(Keys.ARROW_DOWN);
+            if(dropdown.getAttribute("value").equals(data)){
+                test.log(LogStatus.INFO,"Requested effective date selected");
+                break;
+            }
+        }
+            if(i==size){
+                reportFailures("Couldn't find requested effective date");
+                throw new Exception("Couldn't find requested effective date");
+            }
+        
+    }
+    
     public static WebElement getObject(String objectKey){
         WebElement e=null;
         try{
@@ -162,7 +180,7 @@ public class GenericKeywords extends TestNG{
         String expectedTitle = prop.getProperty(expectedTitleKey);
         String actualTitle=driver.getTitle();
         if(expectedTitle.equals(actualTitle))
-            test.log(LogStatus.PASS,"Title is matched");
+            test.log(LogStatus.INFO,"Title is matched");
         else {
             reportFailures("Title didn't match");
         }

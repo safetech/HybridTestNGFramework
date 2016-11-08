@@ -9,10 +9,11 @@ import org.testng.annotations.Test;
 
 import java.util.Hashtable;
 
+
 public class CreateLeadTest extends BaseTest {
    
     @Test(dataProvider = "getData")
-    public void createLead(Hashtable<String, String> data){
+    public void createLead(Hashtable<String, String> data) throws Exception {
     test = rep.startTest("CreateLeadTest");
         test.log(LogStatus.INFO, "Starting the create lead test");
         test.log(LogStatus.INFO, "Data -> "+data.toString());

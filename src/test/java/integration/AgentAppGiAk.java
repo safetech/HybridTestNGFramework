@@ -16,7 +16,7 @@ import utils.Xls_Reader;
 import java.util.Hashtable;
 
 
-public class LoginTest extends BaseTest{
+public class AgentAppGiAk extends BaseTest{
     Xls_Reader xls = new Xls_Reader(System.getProperty("user.dir")+"/data/TestData.xlsx");
     ExtentReports rep = ExtentManager.getInstance();
     ExtentTest test;
@@ -25,7 +25,7 @@ public class LoginTest extends BaseTest{
     @Test(dataProvider = "getData")
     public void loginTest(Hashtable<String, String> data) throws Exception {
         
-        test = rep.startTest("LoginTest");
+        test = rep.startTest("AgentAppGiAk");
         test.log(LogStatus.INFO, "Starting the login Test");
         test.log(LogStatus.INFO, "Data ->" + data.toString());
         
@@ -35,7 +35,7 @@ public class LoginTest extends BaseTest{
         }
 
         app = new Keywords(test);
-        app.executeKeywords("LoginTest", data, xls);
+        app.executeKeywords("AgentAppGiAk", data, xls);
         test.log(LogStatus.PASS, "Login Test Passed");
     }
     
@@ -52,6 +52,6 @@ System.out.print("Testing ");
     }
     @DataProvider
     public Object[][] getData(){
-        return DataUtil.getTestData(xls, "LoginTest");
+        return DataUtil.getTestData(xls, "AgentAppGiAk");
     }
 }

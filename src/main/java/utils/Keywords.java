@@ -12,7 +12,7 @@ public class Keywords {
         test = t;
     }
 
-    public void executeKeywords(String testName, Hashtable<String, String> testData, Xls_Reader xls ) {
+    public void executeKeywords(String testName, Hashtable<String, String> testData, Xls_Reader xls ) throws Exception {
         test.log(LogStatus.INFO, "Starting the execution of keywords");
 
          xls = new Xls_Reader(System.getProperty("user.dir")+"/data/TestData.xlsx");
@@ -43,7 +43,8 @@ public class Keywords {
                     appKeywords.click(objIdentifier);
                     break;
                 case "input":
-                    appKeywords.sendKeys(objIdentifier, dataKey);
+                    appKeywords.sendKeys(objIdentifier, data);
+                    
                     break;
                 case "switchtoFrame":
                     appKeywords.switchtoFrame(objIdentifier);
@@ -61,12 +62,14 @@ public class Keywords {
                     appKeywords.getObjects(objIdentifier);
                     break;
                 case "closeSpecificBrowser":
-                    appKeywords.closeSpecificBrowser(dataKey);
+                    appKeywords.closeSpecificBrowser(data);
                     break;                
                 case "assertBlank":
                     GenericKeywords.assertBlank(objIdentifier);
+                    break;                
+                case "select":
+                        GenericKeywords.select(objIdentifier, data);
                     break;
-
             }
             
         }
