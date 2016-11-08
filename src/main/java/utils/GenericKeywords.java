@@ -86,7 +86,7 @@ public class GenericKeywords extends TestNG{
         driver.close();
         driver.switchTo().window(baseWindowHdl);
     }
-    public void exitFrame() {
+    public static void exitFrame() {
         test.log(LogStatus.INFO,"Exiting from frame");
         driver.switchTo().defaultContent();
     }
@@ -118,10 +118,15 @@ public class GenericKeywords extends TestNG{
             }
         }
     }
-//    public int getVisibleElementCount() {
-//        return Integer.parseInt(getScriptResult("$('input:visible, select:visible').length"));
-//    }
+    public static Integer getVisibleElementCount() {
+        return Integer.parseInt(String.valueOf(executeScript("return $('input:visible, select:visible').length")));
+    }
 
+    public static Object executeScript(String script) {
+        return ((JavascriptExecutor) driver).executeScript(script);
+         
+    }
+    
     public static void select(String objectKey, String data) throws Exception {
      int size = new Select(driver.findElement(By.id(prop.getProperty(objectKey)))).getOptions().size();
      WebElement dropdown = driver.findElement(By.id(prop.getProperty(objectKey)));
@@ -166,45 +171,61 @@ public class GenericKeywords extends TestNG{
         }
         return e;
     }    
-    public List<WebElement> getObjects(String objectKey){
+    
+    public static void verifyElementPresent(String objectKey){
+        int i= getObjectList(objectKey).size();
+        
+        if(i==0)
+            reportFailures("Object not found - "+objectKey);
+    }
+    
+    public static List<WebElement> getObjectList(String objectKey){
         List<WebElement> e=null;
         try{
-            if(objectKey.endsWith("_xpath")) 
+            if(objectKey.endsWith("_xpath"))
                 e = driver.findElements(By.xpath(prop.getProperty(objectKey)));
+            else if(objectKey.endsWith("_id"))
+                e = driver.findElements(By.id(prop.getProperty(objectKey)));
+            else if(objectKey.endsWith("_name"))
+                e = driver.findElements(By.name(prop.getProperty(objectKey)));
         }catch(Exception e1){
             reportFailures("Could not find Object ->"+e1.getMessage());
         }
         return e;
     }
-    public void verifyTitle(String expectedTitleKey){
+    
+    public static void verifyTitle(String expectedTitleKey){
         String expectedTitle = prop.getProperty(expectedTitleKey);
         String actualTitle=driver.getTitle();
         if(expectedTitle.equals(actualTitle))
             test.log(LogStatus.INFO,"Title is matched");
         else {
-            reportFailures("Title didn't match");
+            reportFailures("Title didn't match - "+actualTitle);
         }
     }
-    
+    public static void actualDataAssertion(String actualData, String expectedData){
+        assertThat(actualData,equalTo(expectedData));
+    }
     //*******************************************/
     public static void reportFailures(String failurMsg){
         test.log(LogStatus.FAIL,failurMsg);
+        takeScreenShot();
         Assert.fail(failurMsg);
     }
-    public void takeScreenShot(){
+    public static void takeScreenShot(){
         // fileName of the screenshot
         Date d=new Date();
         String screenshotFile=d.toString().replace(":", "_").replace(" ", "_")+".png";
         // store screenshot in that file
         File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"//screenshots//"+screenshotFile));
+            FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"src/test/screenshots/"+screenshotFile));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         //put screenshot file in reports
-        test.log(LogStatus.INFO,"Screenshot-> "+ test.addScreenCapture(System.getProperty("user.dir")+"//screenshots//"+screenshotFile));
+        test.log(LogStatus.INFO,"Screenshot-> "+ test.addScreenCapture(System.getProperty("user.dir")+"src/test/screenshots/"+screenshotFile));
 
     }
 }

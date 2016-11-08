@@ -5,6 +5,8 @@ import com.relevantcodes.extentreports.LogStatus;
 
 import java.util.Hashtable;
 
+import static utils.GenericKeywords.actualDataAssertion;
+
 public class Keywords {
     ExtentTest test;
     ApplicationKeywords appKeywords;
@@ -27,7 +29,7 @@ public class Keywords {
             String keyword  = xls.getCellData(sheetTC, "Keyword", rNum);
             String objIdentifier  = xls.getCellData(sheetTC, "ObjectIdentifier", rNum);
             String dataKey  = xls.getCellData(sheetTC, "DataKey", rNum);
-             
+            String expectedData = xls.getCellData(sheetTC,"ExpectedData",rNum);
             String data = testData.get(dataKey);
             
             test.log(LogStatus.INFO,tName +" ---- "+ keyword +" --- "+ objIdentifier + " ---- "+ dataKey);
@@ -44,13 +46,12 @@ public class Keywords {
                     break;
                 case "input":
                     appKeywords.sendKeys(objIdentifier, data);
-                    
                     break;
                 case "switchtoFrame":
                     appKeywords.switchtoFrame(objIdentifier);
                     break;
                 case "exitFrame":
-                    appKeywords.exitFrame();
+                    GenericKeywords.exitFrame();
                     break;
                 case "validateLogin":
                     appKeywords.validateLogin();
@@ -59,7 +60,9 @@ public class Keywords {
                     appKeywords.waitForSpecificSeconds(dataKey);
                     break;
                 case "getVisibleElementCount":
-                    appKeywords.getObjects(objIdentifier);
+                    String objCount = GenericKeywords.getVisibleElementCount().toString();
+                    xls.setCellData(sheetTC,"ActualData", rNum, objCount);
+                    actualDataAssertion(xls.getCellData(sheetTC,"ActualData",rNum),expectedData);
                     break;
                 case "closeSpecificBrowser":
                     appKeywords.closeSpecificBrowser(data);
@@ -69,7 +72,17 @@ public class Keywords {
                     break;                
                 case "select":
                         GenericKeywords.select(objIdentifier, data);
-                    break;
+                    break;                
+                case "verifyElementPresent":
+                        GenericKeywords.verifyElementPresent(objIdentifier);
+                    break;                
+                case "verifyTitle":
+                        GenericKeywords.verifyTitle(objIdentifier);
+                    break;                
+                case "getObjectList":
+                        GenericKeywords.getObjectList(objIdentifier);
+                    break;                
+
             }
             
         }

@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 
 public class Xls_Reader {
-    public static String filename = System.getProperty("user.dir")+"/src/main/TestData.xlsx";
+    public static String filename = System.getProperty("user.dir")+"data/TestData.xlsx";
     public String path;
     public FileInputStream fis = null;
     public FileOutputStream fileOut =null;
@@ -231,7 +231,7 @@ public class Xls_Reader {
     
     
     // returns true if data is set successfully else false
-    public boolean setCellData(String sheetName,String colName,int rowNum, String data,String url){
+    public boolean setCellData(String sheetName,String colName,int rowNum, String data, String url){
         //System.out.println("setCellData setCellData******************");
         try{
         fis = new FileInputStream(path); 
@@ -483,7 +483,7 @@ public class Xls_Reader {
         Xls_Reader datatable = null;
         
 
-             datatable = new Xls_Reader("H:\\Student_Selenium_Workspaces\\Framework_Weekend\\src\\Framework_XL_Files\\Controller.xlsx");
+             datatable = new Xls_Reader("path of excel");
                 for(int col=0 ;col< datatable.getColumnCount("TC5"); col++){
                     System.out.println(datatable.getCellData("TC5", col, 1));
                 }

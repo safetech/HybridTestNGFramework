@@ -41,7 +41,7 @@ public class AgentAppGiAk extends BaseTest{
     
     @Test
     public void testMethod(){
-System.out.print("Testing ");
+
     }
     
     @AfterMethod
