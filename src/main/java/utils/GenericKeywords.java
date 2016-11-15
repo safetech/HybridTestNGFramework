@@ -6,12 +6,14 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.TestNG;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +30,16 @@ public class GenericKeywords extends TestNG{
     public static WebDriver driver;
     public static Properties prop;
     public static ExtentTest test;
+
+
+    public static SimpleDateFormat COMPAS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static SimpleDateFormat COMMON_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
+    public static SimpleDateFormat NORMALIZED_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+    public static SimpleDateFormat DD_MMM_YYYY_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
+    public static SimpleDateFormat MMMM_D_YYYY_FORMAT = new SimpleDateFormat("MMMM 1, yyyy");
+    public static SimpleDateFormat YY_MM_DD_ZERO_TIME = new SimpleDateFormat("yyyy-MM-dd");
+    
+    
     
     public static void openBrowser(String browserName){
         System.out.println("Opening Browser");
@@ -48,9 +60,15 @@ public class GenericKeywords extends TestNG{
     }
     
     public void click(String objectKey){
-        waitForSpecificSeconds("1");
-        test.log(LogStatus.INFO,"Clicking on "+prop.getProperty(objectKey));
-        getObject(objectKey).click();
+        try {
+            waitForSpecificSeconds("1");
+            test.log(LogStatus.INFO,"Clicking on "+prop.getProperty(objectKey));
+            getObject(objectKey).click();
+            
+        }catch (Exception e){
+            reportFailures("Couldn't click on element -->"+e);
+        }
+
     }
 
     public void sendKeys(String objectKey, String data){
@@ -118,10 +136,70 @@ public class GenericKeywords extends TestNG{
             }
         }
     }
-    public static Integer getVisibleElementCount() {
-        return Integer.parseInt(String.valueOf(executeScript("return $('input:visible, select:visible').length")));
+    public static Integer getVisibleElementCount(String type) {
+        return Integer.parseInt(String.valueOf(executeScript("return $('"+type+":visible').length")));
+    }    
+    public static void setDob(WebElement element, String data) {
+        String date = DateUtils.getDOBofPersonTurningAgeToday(Integer.parseInt(data));
+        element.sendKeys(date);
+    }     
+    public static void setMpbed(WebElement element, String data) {
+        String date = DateUtils.getFirstDayOfPastOrFutureMonths(Integer.parseInt(data));
+        element.sendKeys(date);
+        element.sendKeys(Keys.TAB);
+    }     
+    public static void setDpsd(WebElement element, String data) {
+        String date = DateUtils.getFirstDayOfPastOrFutureMonths(Integer.parseInt(data));
+        element.sendKeys(date);
+    }    
+    public static void setText(WebElement element, String data) {
+        element.sendKeys(Keys.COMMAND+"a");
+        element.sendKeys(data);
+        element.sendKeys(Keys.RETURN);
+    }    
+    public static String getText(String element) {
+        String actualText = getObject(element).getText();
+        return actualText;
+    }    
+    public static String GetStateCode(String element) {
+        try{
+            Thread.sleep(2000);
+        }catch(Exception e){
+        }
+        sendKey(Keys.ENTER);
+            int i=4;
+        String actualText = getObject(element).getText();
+        String ZipCode=driver.findElement(By.id("ZipCode")).getAttribute("value");
+        while(actualText.equals("") || actualText.equals(null)){
+            blur("#ZipCode");
+            try{
+                Thread.sleep(1000);
+            }catch(Exception e){
+            }
+            driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.COMMAND+"a");
+            driver.findElement(By.cssSelector("#ZipCode")).sendKeys("0840"+(i)%10);
+            driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.RETURN);
+            blur("#ZipCode");
+            try{
+                Thread.sleep(1000);
+            }catch(Exception e){
+            }
+            actualText = getObject(element).getAttribute("value");
+            i++;
+        }
+        driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.COMMAND+"a");
+        driver.findElement(By.id("ZipCode")).sendKeys(ZipCode);
+        driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.RETURN);
+        actualText = getObject(element).getText();
+        return actualText;
     }
-
+    public static void blur(String selector){
+        executeScript("$('"+selector+"').blur()");
+        try{
+            Thread.sleep(1000);
+        }catch(Exception e){
+        }
+    }
     public static Object executeScript(String script) {
         return ((JavascriptExecutor) driver).executeScript(script);
          
@@ -132,6 +210,7 @@ public class GenericKeywords extends TestNG{
      WebElement dropdown = driver.findElement(By.id(prop.getProperty(objectKey)));
         int i;
         for(i=0; i<size; i++){
+            sendKey(Keys.ENTER);
             dropdown.sendKeys(Keys.ARROW_DOWN);
             if(dropdown.getAttribute("value").equals(data)){
                 test.log(LogStatus.INFO,"Requested effective date selected");
@@ -143,6 +222,11 @@ public class GenericKeywords extends TestNG{
                 throw new Exception("Couldn't find requested effective date");
             }
         
+    }
+    
+    public static void sendKey(Keys key){
+        Actions obj = new Actions(driver);
+        obj.sendKeys(key);
     }
     
     public static WebElement getObject(String objectKey){
@@ -170,7 +254,7 @@ public class GenericKeywords extends TestNG{
             reportFailures("Could not find Object ->"+e1.getMessage());
         }
         return e;
-    }    
+    }       
     
     public static void verifyElementPresent(String objectKey){
         int i= getObjectList(objectKey).size();
@@ -189,11 +273,17 @@ public class GenericKeywords extends TestNG{
             else if(objectKey.endsWith("_name"))
                 e = driver.findElements(By.name(prop.getProperty(objectKey)));
         }catch(Exception e1){
-            reportFailures("Could not find Object ->"+e1.getMessage());
+            reportFailures(e1.getMessage());
         }
         return e;
-    }
+    }    
     
+    
+    
+    public static String getDOBofPersonTurningAgeToday(int age) {
+        Date dob = org.apache.commons.lang3.time.DateUtils.addYears(new Date(), -age);
+        return NORMALIZED_DATE_FORMAT.format(dob);
+    }
     public static void verifyTitle(String expectedTitleKey){
         String expectedTitle = prop.getProperty(expectedTitleKey);
         String actualTitle=driver.getTitle();
@@ -219,13 +309,13 @@ public class GenericKeywords extends TestNG{
         // store screenshot in that file
         File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {
-            FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"src/test/screenshots/"+screenshotFile));
+            FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"/src/test/screenshots/"+screenshotFile));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         //put screenshot file in reports
-        test.log(LogStatus.INFO,"Screenshot-> "+ test.addScreenCapture(System.getProperty("user.dir")+"src/test/screenshots/"+screenshotFile));
+        test.log(LogStatus.INFO,"Screenshot-> "+ test.addScreenCapture(System.getProperty("user.dir")+"/src/test/screenshots/"+screenshotFile));
 
     }
 }

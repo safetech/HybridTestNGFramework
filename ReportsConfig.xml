@@ -2,7 +2,7 @@
 <extentreports>
     <configuration>
         <!-- report theme -->
-        <!-- standard, dark -->
+         standard, dark 
         <theme>standard</theme>
     
         <!-- document encoding -->
@@ -14,13 +14,13 @@
         <protocol>https</protocol>
         
         <!-- title of the document -->
-        <documentTitle>Sample Automation Reports</documentTitle>
+        <documentTitle>DS Automation Reports</documentTitle>
         
         <!-- report name - displayed at top-nav -->
-        <reportName>Automation Report</reportName>
+        <reportName>ACQ Online Enrollment</reportName>
         
         <!-- report headline - displayed at top-nav, after reportHeadline -->
-        <reportHeadline>Headline 1</reportHeadline>
+        <reportHeadline>Agent channel</reportHeadline>
         
         <!-- global date format override -->
         <!-- defaults to yyyy-MM-dd -->

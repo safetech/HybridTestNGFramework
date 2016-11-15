@@ -1,15 +1,15 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Sample suite" parallel="tests">
 
-    <test name="Login Test" allow-return-values="true">
+    <test name="AgentAppGiAk" allow-return-values="true">
         <classes>
-            <class name="com.qtpselenium.hybrid.LoginTest" />
+            <class name="reports.ExtentManager" />
         </classes>
     </test>
 
-    <test name="Lead Test" allow-return-values="true">
+    <test name="AgentFullUnderwriting" allow-return-values="true">
         <classes>
-            <class name="com.qtpselenium.hybrid.LeadTest" />
+            <class name="reports.ExtentManager" />
         </classes>
     </test>
 

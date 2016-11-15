@@ -13,7 +13,7 @@ public class ExtentManager {
         if(extent==null) {
             Date d = new Date();
             String fileName = d.toString().replace(":", "_").replace(" ", "_") + ".html";
-            extent=new ExtentReports("/Users/sislam13/Desktop/"+ fileName);
+            extent=new ExtentReports(System.getProperty("user.dir")+"/src/test/reports/"+ fileName);
             extent.loadConfig(new File(System.getProperty("user.dir")+"/ReportsConfig.xml"));
         }
         return extent;

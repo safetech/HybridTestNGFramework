@@ -23,7 +23,7 @@ public class AgentAppGiAk extends BaseTest{
     Keywords app = new Keywords(test);
     
     @Test(dataProvider = "getData")
-    public void loginTest(Hashtable<String, String> data) throws Exception {
+    public void AgentGiTest(Hashtable<String, String> data) throws Exception {
         
         test = rep.startTest("AgentAppGiAk");
         test.log(LogStatus.INFO, "Starting the login Test");
@@ -36,12 +36,22 @@ public class AgentAppGiAk extends BaseTest{
 
         app = new Keywords(test);
         app.executeKeywords("AgentAppGiAk", data, xls);
-        test.log(LogStatus.PASS, "Login Test Passed");
+        test.log(LogStatus.PASS, "AgentAppGiAk Test Passed");
     }
     
-    @Test
-    public void testMethod(){
+    @Test(dataProvider = "getData")
+    public void agentFullUnderwritingTest(Hashtable<String, String>data) throws Exception{
+        test = rep.startTest("AgentAppFullAk");
+        test.log(LogStatus.INFO, "Starting the login Test");
+        test.log(LogStatus.INFO, "Data ->" + data.toString());
+        if(data.get("Runmode").equals("N")){
+            test.log(LogStatus.SKIP, "Skipping the test as runmode is set to No");
+            throw new SkipException("Skipping the test as runmode is set to No");
+        }
 
+        app = new Keywords(test);
+        app.executeKeywords("AgentAppFullAk", data, xls);
+        test.log(LogStatus.PASS, "AgentAppFullAk Test Passed");
     }
     
     @AfterMethod
