@@ -7,7 +7,9 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.TestNG;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
@@ -63,6 +66,8 @@ public class GenericKeywords extends TestNG{
         try {
             waitForSpecificSeconds("1");
             test.log(LogStatus.INFO,"Clicking on "+prop.getProperty(objectKey));
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.elementToBeClickable(getObject(objectKey)));
             getObject(objectKey).click();
             
         }catch (Exception e){
@@ -70,7 +75,7 @@ public class GenericKeywords extends TestNG{
         }
 
     }
-
+    
     public void sendKeys(String objectKey, String data){
         waitForSpecificSeconds("1");
         test.log(LogStatus.INFO,"Writing in "+prop.getProperty(objectKey));
@@ -85,7 +90,7 @@ public class GenericKeywords extends TestNG{
         System.out.println("Total frames - "+s);
         driver.switchTo().frame(Integer.parseInt(frameIndex));
     }
-    public void waitForSpecificSeconds(String numOfSeconds) {
+    public static void waitForSpecificSeconds(String numOfSeconds) {
         try {
             Thread.sleep(Integer.parseInt(numOfSeconds)*1000);
         } catch (InterruptedException e) {
@@ -146,7 +151,8 @@ public class GenericKeywords extends TestNG{
     public static void setMpbed(WebElement element, String data) {
         String date = DateUtils.getFirstDayOfPastOrFutureMonths(Integer.parseInt(data));
         element.sendKeys(date);
-        element.sendKeys(Keys.TAB);
+        element.sendKeys(Keys.RETURN);
+        
     }     
     public static void setDpsd(WebElement element, String data) {
         String date = DateUtils.getFirstDayOfPastOrFutureMonths(Integer.parseInt(data));
@@ -155,44 +161,31 @@ public class GenericKeywords extends TestNG{
     public static void setText(WebElement element, String data) {
         element.sendKeys(Keys.COMMAND+"a");
         element.sendKeys(data);
-        element.sendKeys(Keys.RETURN);
     }    
     public static String getText(String element) {
         String actualText = getObject(element).getText();
         return actualText;
-    }    
-    public static String GetStateCode(String element) {
-        try{
-            Thread.sleep(2000);
-        }catch(Exception e){
+    }   
+    
+    public static String getStateCode(String element) {
+        String ZipCode = driver.findElement(By.id("ZipCode")).getAttribute("value");
+        if (getObject(element).getAttribute("value").equals("")) {
+            driver.findElement(By.id("ZipCode")).sendKeys(Keys.COMMAND + "a");
+            driver.findElement(By.id("ZipCode")).sendKeys("fgfgf");
+            driver.findElement(By.id("ZipCode")).sendKeys(Keys.RETURN);
         }
-        sendKey(Keys.ENTER);
-            int i=4;
-        String actualText = getObject(element).getText();
-        String ZipCode=driver.findElement(By.id("ZipCode")).getAttribute("value");
-        while(actualText.equals("") || actualText.equals(null)){
-            blur("#ZipCode");
-            try{
-                Thread.sleep(1000);
-            }catch(Exception e){
-            }
-            driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.COMMAND+"a");
-            driver.findElement(By.cssSelector("#ZipCode")).sendKeys("0840"+(i)%10);
-            driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.RETURN);
-            blur("#ZipCode");
-            try{
-                Thread.sleep(1000);
-            }catch(Exception e){
-            }
-            actualText = getObject(element).getAttribute("value");
-            i++;
-        }
-        driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.COMMAND+"a");
-        driver.findElement(By.id("ZipCode")).sendKeys(ZipCode);
-        driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.RETURN);
-        actualText = getObject(element).getText();
-        return actualText;
+
+            driver.findElement(By.cssSelector("#ZipCode")).sendKeys(Keys.COMMAND + "a");
+            driver.findElement(By.id("ZipCode")).sendKeys(ZipCode);
+            waitForSpecificSeconds("1");
+            driver.findElement(By.id("ZipCode")).sendKeys(Keys.RETURN);
+            waitForSpecificSeconds("1");
+        
+        waitForSpecificSeconds("1");
+        return getObject(element).getAttribute("value");
+         
     }
+    
     public static void blur(String selector){
         executeScript("$('"+selector+"').blur()");
         try{
@@ -206,6 +199,7 @@ public class GenericKeywords extends TestNG{
     }
     
     public static void select(String objectKey, String data) throws Exception {
+        Thread.sleep(1000);
      int size = new Select(driver.findElement(By.id(prop.getProperty(objectKey)))).getOptions().size();
      WebElement dropdown = driver.findElement(By.id(prop.getProperty(objectKey)));
         int i;
@@ -213,6 +207,29 @@ public class GenericKeywords extends TestNG{
             sendKey(Keys.ENTER);
             dropdown.sendKeys(Keys.ARROW_DOWN);
             if(dropdown.getAttribute("value").equals(data)){
+                test.log(LogStatus.INFO,"Requested effective date selected");
+                break;
+            }
+        }
+            if(i==size){
+                reportFailures("Couldn't find requested effective date");
+                throw new Exception("Couldn't find requested effective date");
+            }
+        
+    }    
+    public static void selectDpsd(String objectKey, String data) throws Exception {
+        Thread.sleep(1000);
+        blur("#ReqEffectiveDate");
+        Thread.sleep(1000);
+     int size = new Select(driver.findElement(By.id(prop.getProperty(objectKey)))).getOptions().size();
+     WebElement dropdown = driver.findElement(By.id(prop.getProperty(objectKey)));
+        int i;
+        String dpsd=DateUtils.getFirstDayOfFutureMonth(Integer.parseInt(data));
+        
+        for(i=0; i<size; i++){
+            sendKey(Keys.ENTER);
+            dropdown.sendKeys(Keys.ARROW_DOWN);
+            if(dropdown.getAttribute("value").equals(dpsd)){
                 test.log(LogStatus.INFO,"Requested effective date selected");
                 break;
             }
@@ -232,8 +249,7 @@ public class GenericKeywords extends TestNG{
     public static WebElement getObject(String objectKey){
         WebElement e=null;
         try{
-            if(objectKey.endsWith("_xpath")) 
-                
+            if(objectKey.endsWith("_xpath"))
                 e = driver.findElement(By.xpath(prop.getProperty(objectKey)));
             else if(objectKey.endsWith("_id"))
                 e = driver.findElement(By.id(prop.getProperty(objectKey)));
@@ -294,7 +310,12 @@ public class GenericKeywords extends TestNG{
         }
     }
     public static void actualDataAssertion(String actualData, String expectedData){
-        assertThat(actualData,equalTo(expectedData));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertThat(expectedData,containsString(actualData));
     }
     //*******************************************/
     public static void reportFailures(String failurMsg){

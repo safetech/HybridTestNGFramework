@@ -44,10 +44,7 @@ public class Keywords {
                 String actualData = m.invoke(null,objIdentifier).toString();
                 xls.setCellData(sheetTC,"ActualData", rNum, actualData);
                 if(!expectedData.equals(""))
-
                     actualDataAssertion(xls.getCellData(sheetTC,"ActualData",rNum),expectedData);
-                
-                
             }else if (keyword.startsWith("set")) {
                 WebElement element = GenericKeywords.getObject(objIdentifier);
                 Method m = GenericKeywords.class.getMethod(keyword,WebElement.class,String.class);
@@ -65,9 +62,6 @@ public class Keywords {
                     case "click":
                         appKeywords.click(objIdentifier);
                         break;
-                    case "GetStateCode":
-                        GenericKeywords.GetStateCode(objIdentifier);
-                        break;
                     case "switchtoFrame":
                         appKeywords.switchtoFrame(objIdentifier);
                         break;
@@ -80,11 +74,6 @@ public class Keywords {
                     case "waitForSpecificSeconds":
                         appKeywords.waitForSpecificSeconds(dataKey);
                         break;
-//                    case "getVisibleElementCount":
-//                        String objCount = GenericKeywords.getVisibleElementCount().toString();
-//                        xls.setCellData(sheetTC, "ActualData", rNum, objCount);
-//                        actualDataAssertion(xls.getCellData(sheetTC, "ActualData", rNum), expectedData);
-//                        break;
                     case "closeSpecificBrowser":
                         appKeywords.closeSpecificBrowser(data);
                         break;
@@ -99,6 +88,9 @@ public class Keywords {
                         break;
                     case "verifyTitle":
                         GenericKeywords.verifyTitle(objIdentifier);
+                        break;                    
+                    case "selectDpsd":
+                        GenericKeywords.selectDpsd(objIdentifier,data);
                         break;
 
                 }
