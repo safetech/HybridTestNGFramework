@@ -4,6 +4,7 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 import integration.base.BaseTest;
+import org.junit.Ignore;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
@@ -38,7 +39,7 @@ public class AgentAppGiAk extends BaseTest{
         app.executeKeywords("AgentAppGiAk", data, xls);
         test.log(LogStatus.PASS, "AgentAppGiAk Test Passed");
     }
-    
+    @Ignore
     @Test(dataProvider = "getData")
     public void agentFullUnderwritingTest(Hashtable<String, String>data) throws Exception{
         test = rep.startTest("AgentAppFullAk");

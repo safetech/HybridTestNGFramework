@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -48,7 +49,9 @@ public class GenericKeywords extends TestNG{
         System.out.println("Opening Browser");
         System.setProperty("webdriver.chrome.driver","/Users/sislam13/dev/apps/chrome/chrome-46/chromedriver");
         if(browserName.equals("Firefox")){
-            driver = new FirefoxDriver();
+
+            FirefoxProfile ffprofile = new FirefoxProfile(new File("C:\\temp\\Apps\\Firefox\\Profiles"));
+            driver = new FirefoxDriver(ffprofile);
         }else if(browserName.equals("Chrome")){
             driver= new ChromeDriver();
         }
@@ -75,7 +78,9 @@ public class GenericKeywords extends TestNG{
         }
 
     }
-    
+    public static void assertIsDisplayed(String objectKey){
+        assertThat(objectKey+" is not Displayed",getObject(objectKey).isDisplayed(),equalTo(true));
+    }
     public void sendKeys(String objectKey, String data){
         waitForSpecificSeconds("1");
         test.log(LogStatus.INFO,"Writing in "+prop.getProperty(objectKey));
@@ -97,9 +102,9 @@ public class GenericKeywords extends TestNG{
             e.printStackTrace();
         }
     }
-    public void closeSpecificBrowser(String Browser){
+    public static void closeSpecificBrowser(String Browser){
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -159,15 +164,19 @@ public class GenericKeywords extends TestNG{
         element.sendKeys(date);
     }    
     public static void setText(WebElement element, String data) {
-        element.sendKeys(Keys.COMMAND+"a");
+        element.sendKeys(Keys.CONTROL+"a");
         element.sendKeys(data);
     }    
     public static String getText(String element) {
         String actualText = getObject(element).getText();
         return actualText;
     }   
-    
+    public  static void hoverOver(String objIdentifier){
+        Actions actions=new Actions(driver);
+        actions.moveToElement(getObject(objIdentifier)).perform();
+    }
     public static String getStateCode(String element) {
+        sendKey(Keys.TAB);
         String ZipCode = driver.findElement(By.id("ZipCode")).getAttribute("value");
         if (getObject(element).getAttribute("value").equals("")) {
             driver.findElement(By.id("ZipCode")).sendKeys(Keys.COMMAND + "a");
@@ -227,13 +236,14 @@ public class GenericKeywords extends TestNG{
         String dpsd=DateUtils.getFirstDayOfFutureMonth(Integer.parseInt(data));
         
         for(i=0; i<size; i++){
-            sendKey(Keys.ENTER);
+            //sendKey(Keys.ENTER);
             dropdown.sendKeys(Keys.ARROW_DOWN);
             if(dropdown.getAttribute("value").equals(dpsd)){
                 test.log(LogStatus.INFO,"Requested effective date selected");
                 break;
             }
         }
+        sendKey(Keys.TAB);
             if(i==size){
                 reportFailures("Couldn't find requested effective date");
                 throw new Exception("Couldn't find requested effective date");
@@ -243,9 +253,14 @@ public class GenericKeywords extends TestNG{
     
     public static void sendKey(Keys key){
         Actions obj = new Actions(driver);
-        obj.sendKeys(key);
+        obj.sendKeys(key).perform();
     }
-    
+    public static void sendClick(){
+        Actions obj = new Actions(driver);
+        obj.click().perform();
+    }
+
+
     public static WebElement getObject(String objectKey){
         WebElement e=null;
         try{

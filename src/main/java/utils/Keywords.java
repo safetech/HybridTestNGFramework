@@ -54,7 +54,6 @@ public class Keywords {
                 switch (keyword) {
                     case "openBrowser":
                         GenericKeywords.openBrowser(data);
-                        
                         break;
                     case "navigate":
                         appKeywords.navigate(objIdentifier);
@@ -75,10 +74,13 @@ public class Keywords {
                         appKeywords.waitForSpecificSeconds(dataKey);
                         break;
                     case "closeSpecificBrowser":
-                        appKeywords.closeSpecificBrowser(data);
+                        appKeywords.closeSpecificBrowser(dataKey);
                         break;
                     case "assertBlank":
                         GenericKeywords.assertBlank(objIdentifier);
+                        break;
+                    case "assertIsDisplayed":
+                        GenericKeywords.assertIsDisplayed(objIdentifier);
                         break;
                     case "select":
                         GenericKeywords.select(objIdentifier, data);
@@ -91,6 +93,13 @@ public class Keywords {
                         break;                    
                     case "selectDpsd":
                         GenericKeywords.selectDpsd(objIdentifier,data);
+                        break;
+                    case "hoverOver":
+                        GenericKeywords.hoverOver(objIdentifier);
+                        break;
+
+                    default:
+                        System.out.println(keyword +" is not defined in switch case");
                         break;
 
                 }

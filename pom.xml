@@ -98,7 +98,7 @@
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3.0</version>
+            <version>11.2.0.1.0</version>
         </dependency>
     </dependencies>
 
@@ -109,7 +109,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <agent.url>https://aarpsupplementalhealth-stg.uhc.com/ole/ms-agent.html?cheat=true</agent.url>
+                <agent.url>https://aarpsupplementalhealth-tst.uhc.com/ole/ms-agent.html?cheat=true</agent.url>
                 <db.stage.connection>jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=dbsrt1046.uhc.com)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmp0ts17svc.uhc.com)))</db.stage.connection>
                 <db.username>QAAUTOREAD</db.username>
                 <db.password>Aut0mation1</db.password>
