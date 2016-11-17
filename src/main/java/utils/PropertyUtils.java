@@ -8,7 +8,7 @@ public class PropertyUtils {
     public static String getProperty(String key) {
         Properties props = new Properties();
 
-        InputStream is = ClassLoader.getSystemResourceAsStream("application.properties");
+        InputStream is = ClassLoader.getSystemResourceAsStream("project.properties");
         try {
             props.load(is);
         }

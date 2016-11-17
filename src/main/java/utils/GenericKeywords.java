@@ -7,6 +7,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -34,23 +35,20 @@ public class GenericKeywords extends TestNG{
     public static WebDriver driver;
     public static Properties prop;
     public static ExtentTest test;
-
-
     public static SimpleDateFormat COMPAS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     public static SimpleDateFormat COMMON_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
     public static SimpleDateFormat NORMALIZED_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
     public static SimpleDateFormat DD_MMM_YYYY_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
     public static SimpleDateFormat MMMM_D_YYYY_FORMAT = new SimpleDateFormat("MMMM 1, yyyy");
     public static SimpleDateFormat YY_MM_DD_ZERO_TIME = new SimpleDateFormat("yyyy-MM-dd");
-    
-    
-    
+
     public static void openBrowser(String browserName){
         System.out.println("Opening Browser");
         System.setProperty("webdriver.chrome.driver","/Users/sislam13/dev/apps/chrome/chrome-46/chromedriver");
         if(browserName.equals("Firefox")){
 
-            FirefoxProfile ffprofile = new FirefoxProfile(new File("C:\\temp\\Apps\\Firefox\\Profiles"));
+            ProfilesIni profile = new ProfilesIni();
+            FirefoxProfile ffprofile = profile.getProfile("Selenium");
             driver = new FirefoxDriver(ffprofile);
         }else if(browserName.equals("Chrome")){
             driver= new ChromeDriver();
@@ -60,9 +58,9 @@ public class GenericKeywords extends TestNG{
         test.log(LogStatus.INFO,"Browser opened successfully");
     }
     
-    public void navigate(String urlKey){
+    public void navigate(String url){
         test.log(LogStatus.INFO,"Navigated to url");
-        driver.get(prop.getProperty(urlKey));
+        driver.get(prop.getProperty(url));
     }
     
     public void click(String objectKey){
